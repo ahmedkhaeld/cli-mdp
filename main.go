@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday/v2"
+	"io"
+	"io/ioutil"
+	"os"
 )
 
 const (
@@ -38,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := run(*filename); err != nil {
+	if err := run(*filename, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -51,7 +50,7 @@ func main() {
 //then pass content to ParseContent() func
 //which is responsible for converting MD to HTML
 //and returns a potential error
-func run(filename string) error {
+func run(filename string, out io.Writer) error {
 	// Read all the data from the input file and check for errors
 	mdContent, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -60,8 +59,21 @@ func run(filename string) error {
 
 	htmlData := parseContent(mdContent)
 
-	outName := fmt.Sprintf("%s.html", filepath.Base(filename))
-	fmt.Println(outName)
+	//preview the md content through a temporary file
+	//use TempFile func that generate a random file name
+	//store the file in a system temp directory
+	//instead of creating file locally
+	tf, err := ioutil.TempFile("", "mdp*.html")
+	if err != nil {
+		return err
+	}
+	if err := tf.Close(); err != nil {
+		return err
+	}
+	outName := tf.Name()
+
+	//print the outName to the out
+	fmt.Fprintln(out, outName)
 
 	return saveHTML(outName, htmlData)
 }

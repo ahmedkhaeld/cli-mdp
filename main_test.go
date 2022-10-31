@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 )
 
 const (
-	inputFile  = "./testdata/test1.md"
-	resultFile = "test1.md.html"
-	expFile    = "./testdata/test1.md.html" //exp
+	inputFile = "./testdata/test1.md"
+	//is useless now for the testing as the resultName generated randomly
+	//resultFile = "test1.md.html"
+	expFile = "./testdata/test1.md.html" //exp
 )
 
 func TestParseContent(t *testing.T) {
@@ -31,11 +34,19 @@ func TestParseContent(t *testing.T) {
 	}
 }
 
+//update TestRun to take filename dynamically
+
 func TestRun(t *testing.T) {
-	if err := run(inputFile); err != nil {
+	//mockStdout will hold the file name
+	//generated from calling the run()
+	var mockStdout bytes.Buffer
+	if err := run(inputFile, &mockStdout); err != nil {
 		t.Fatal(err)
 	}
-	result, err := ioutil.ReadFile(resultFile)
+	//remove any space type character from the file name
+	resultFile := strings.TrimSpace(mockStdout.String())
+
+	got, err := ioutil.ReadFile(resultFile)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,9 +56,9 @@ func TestRun(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if len(expected) != len(result) {
+	if len(expected) != len(got) {
 		t.Logf("golden:\n%s\n", expected)
-		t.Logf("result:\n%s\n", result)
+		t.Logf("result:\n%s\n", got)
 		t.Error("Result content does not match golden file")
 
 	}
