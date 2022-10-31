@@ -9,6 +9,8 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"runtime"
 )
 
 const (
@@ -29,6 +31,7 @@ const (
 func main() {
 	// Parse flags
 	filename := flag.String("file", "", "Markdown file to preview")
+	skipPreview := flag.Bool("s", false, "Skip auto-preview")
 	flag.Parse()
 
 	// If user did not provide input file, show usage
@@ -37,7 +40,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := run(*filename, os.Stdout); err != nil {
+	if err := run(*filename, os.Stdout, *skipPreview); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -50,7 +53,7 @@ func main() {
 //then pass content to ParseContent() func
 //which is responsible for converting MD to HTML
 //and returns a potential error
-func run(filename string, out io.Writer) error {
+func run(filename string, out io.Writer, skipPreview bool) error {
 	// Read all the data from the input file and check for errors
 	mdContent, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -75,7 +78,14 @@ func run(filename string, out io.Writer) error {
 	//print the outName to the out
 	fmt.Fprintln(out, outName)
 
-	return saveHTML(outName, htmlData)
+	if err := saveHTML(outName, htmlData); err != nil {
+		return err
+	}
+
+	if skipPreview {
+		return nil
+	}
+	return preview(outName)
 }
 
 //parseContent parse Markdown content into HTML
@@ -107,4 +117,35 @@ func parseContent(mdContent []byte) []byte {
 func saveHTML(savedTo string, data []byte) error {
 	// Write the bytes to the file
 	return ioutil.WriteFile(savedTo, data, 0644)
+}
+
+//preview takes the temp file name as input
+//and return error in case it can't open the file
+func preview(filename string) error {
+	cName := ""
+	var cParams []string
+
+	//Define executable based on os
+	switch runtime.GOOS {
+	case "linux":
+		cName = "xdg-open"
+	case "windows":
+		cName = "cmd.exe"
+		cParams = []string{"/C", "start"}
+	case "darwin":
+		cName = "open"
+	default:
+		return fmt.Errorf("OS not supported")
+	}
+	//append filename to parameter list
+	cParams = append(cParams, filename)
+
+	//locate executable in $PATH and executes it
+	cPath, err := exec.LookPath(cName)
+	if err != nil {
+		return err
+	}
+
+	//open the file using default program
+	return exec.Command(cPath, cParams...).Run()
 }

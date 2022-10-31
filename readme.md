@@ -13,3 +13,13 @@ Markdown, but it doesn't include the HTML header and footer required to view it 
 * Use the `bluemonday` pkg to sanitize the html content to be valid and safe<br>
 `- go get github.com/russross/blackfriday/v2` <br>
 `- go get github.com/microcosm-cc/bluemonday`
+
+---
+* Auto-Preview Feature
+
+use those commands to build and execute the tool:<br>
+the preview file opening automatically in the browser.
+``` 
+go build -o mdp
+./mdp -file README.md
+```

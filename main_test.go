@@ -40,7 +40,7 @@ func TestRun(t *testing.T) {
 	//mockStdout will hold the file name
 	//generated from calling the run()
 	var mockStdout bytes.Buffer
-	if err := run(inputFile, &mockStdout); err != nil {
+	if err := run(inputFile, &mockStdout, true); err != nil {
 		t.Fatal(err)
 	}
 	//remove any space type character from the file name
