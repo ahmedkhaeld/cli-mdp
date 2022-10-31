@@ -9,7 +9,7 @@ import (
 const (
 	inputFile  = "./testdata/test1.md"
 	resultFile = "test1.md.html"
-	goldenFile = "./testdata/test1.md.html" //exp
+	expFile    = "./testdata/test1.md.html" //exp
 )
 
 func TestParseContent(t *testing.T) {
@@ -19,7 +19,7 @@ func TestParseContent(t *testing.T) {
 	}
 	result := parseContent(input)
 
-	expected, err := ioutil.ReadFile(goldenFile)
+	expected, err := ioutil.ReadFile(expFile)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,7 +28,6 @@ func TestParseContent(t *testing.T) {
 		t.Logf("golden:\n%s\n", expected)
 		t.Logf("result:\n%s\n", result)
 		t.Error("Result content does not match golden file")
-		t.Error("expected:", len(expected), "result", len(result))
 	}
 }
 
@@ -41,7 +40,7 @@ func TestRun(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected, err := ioutil.ReadFile(goldenFile)
+	expected, err := ioutil.ReadFile(expFile)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +49,6 @@ func TestRun(t *testing.T) {
 		t.Logf("golden:\n%s\n", expected)
 		t.Logf("result:\n%s\n", result)
 		t.Error("Result content does not match golden file")
-		t.Error("expected:", len(expected), "result", len(result))
 
 	}
 

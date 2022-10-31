@@ -53,12 +53,12 @@ func main() {
 //and returns a potential error
 func run(filename string) error {
 	// Read all the data from the input file and check for errors
-	input, err := ioutil.ReadFile(filename)
+	mdContent, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
 	}
 
-	htmlData := parseContent(input)
+	htmlData := parseContent(mdContent)
 
 	outName := fmt.Sprintf("%s.html", filepath.Base(filename))
 	fmt.Println(outName)
@@ -69,30 +69,30 @@ func run(filename string) error {
 //parseContent parse Markdown content into HTML
 //receives a slice of bytes representing the content of the MD file
 //returns another slice of bytes with the converted content as HTML
-func parseContent(input []byte) []byte {
+func parseContent(mdContent []byte) []byte {
 	// Parse the markdown file through blackfriday and bluemonday
 	// to generate a valid and safe HTML
-	output := blackfriday.Run(input)
-	body := bluemonday.UGCPolicy().SanitizeBytes(output)
+	body := blackfriday.Run(mdContent)
+	sanitizedBody := bluemonday.UGCPolicy().SanitizeBytes(body)
 
 	// Create a buffer of bytes to write to file
 	var buffer bytes.Buffer
 
 	// Write html to bytes buffer
 	buffer.WriteString(header)
-	buffer.Write(body)
+	buffer.Write(sanitizedBody)
 	buffer.WriteString(footer)
 
 	return buffer.Bytes()
 }
 
-//saveHTML save the result into a file to transform MD into HTML
+//saveHTML wrapper of WriteFile to save the content to a html extension
 //it receives the entire html Content to be saved, and html file name
-//specified by the parameter savedFile
-//with file permission of creating a file
+//specified by the parameter savedTo
+//with file permission of creating a file if it doesn't exist
 //that's both readable and writable by the owner's only, readable by everyone
 //returns potential error
-func saveHTML(outFname string, data []byte) error {
+func saveHTML(savedTo string, data []byte) error {
 	// Write the bytes to the file
-	return ioutil.WriteFile(outFname, data, 0644)
+	return ioutil.WriteFile(savedTo, data, 0644)
 }

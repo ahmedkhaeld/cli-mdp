@@ -1,8 +1,7 @@
 # MarkDown Preview
-MarkDown Preview tool`mdp`, accept the file name of Markdown
-file to be previewed as its argument. This tool will perform
+MarkDown Preview tool`mdp`, that convert .md extension to .html extension that can be viewed in a browser
 
-four main steps:
+How? in four main steps:
 1. Read the content of the input Markdown file
 2. Use some Go external libraries to parse Markdown and generate valid HTML block
 3. Wrap the results with an HTML header and footers
@@ -11,4 +10,6 @@ four main steps:
 ---
 * Use the `blackfriday` pkg generate the content based on the input
 Markdown, but it doesn't include the HTML header and footer required to view it in a browser.
-* Use the `bluemonday` pkg to sanitize the html content to be valid and safe
+* Use the `bluemonday` pkg to sanitize the html content to be valid and safe<br>
+`- go get github.com/russross/blackfriday/v2` <br>
+`- go get github.com/microcosm-cc/bluemonday`
