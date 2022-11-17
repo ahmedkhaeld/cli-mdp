@@ -15,11 +15,11 @@ Markdown, but it doesn't include the HTML header and footer required to view it 
 `- go get github.com/microcosm-cc/bluemonday`
 
 ---
-* Auto-Preview Feature
 
 use those commands to build and execute the tool:<br>
-the preview file opening automatically in the browser.
+* preview file feature opening automatically in the browser using -f flag followed by file name.
+* use dynamic html title and body using -t followed by template file
 ``` 
-go build -o mdp
-./mdp -file README.md
+$ go build -o mdp
+$ ./mdp -file README.md -t template-fmt.html.tmpl
 ```
