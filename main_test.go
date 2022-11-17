@@ -10,9 +10,7 @@ import (
 
 const (
 	inputFile = "./testdata/test1.md"
-	//is useless now for the testing as the resultName generated randomly
-	//resultFile = "test1.md.html"
-	expFile = "./testdata/test1.md.html" //exp
+	expFile   = "./testdata/test1.md.html" //exp
 )
 
 func TestParseContent(t *testing.T) {
@@ -20,7 +18,10 @@ func TestParseContent(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	result := parseContent(input)
+	result, err := parseContent(input, "")
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	expected, err := ioutil.ReadFile(expFile)
 	if err != nil {
@@ -40,7 +41,7 @@ func TestRun(t *testing.T) {
 	//mockStdout will hold the file name
 	//generated from calling the run()
 	var mockStdout bytes.Buffer
-	if err := run(inputFile, &mockStdout, true); err != nil {
+	if err := run(inputFile, "", &mockStdout, true); err != nil {
 		t.Fatal(err)
 	}
 	//remove any space type character from the file name
