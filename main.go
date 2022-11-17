@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"time"
 )
 
 const (
@@ -85,6 +86,9 @@ func run(filename string, out io.Writer, skipPreview bool) error {
 	if skipPreview {
 		return nil
 	}
+
+	defer os.Remove(outName)
+
 	return preview(outName)
 }
 
@@ -147,5 +151,10 @@ func preview(filename string) error {
 	}
 
 	//open the file using default program
-	return exec.Command(cPath, cParams...).Run()
+	err = exec.Command(cPath, cParams...).Run()
+
+	//add delay for preview to be displayed before cleaning up
+	time.Sleep(2 * time.Second)
+
+	return err
 }
