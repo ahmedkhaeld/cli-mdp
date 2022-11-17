@@ -23,3 +23,4 @@ use those commands to build and execute the tool:<br>
 $ go build -o mdp
 $ ./mdp -file README.md -t template-fmt.html.tmpl
 ```
+if you want to skip auto-previewing the html file use -s flag
